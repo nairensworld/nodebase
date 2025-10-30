@@ -20,7 +20,7 @@ import {
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
-import { nodeComponents } from "@/config/node-components";
+import { nodeComponents } from "@/app/features/executions/components/node-components";
 import { AddNodeButton } from "./add-node-button";
 
 export const EditorLoading = () => {
