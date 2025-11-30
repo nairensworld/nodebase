@@ -10,6 +10,7 @@ type HttpRequestNodeData = {
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "DELETE";
   body: string;
+  variableName?: string;
 };
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
@@ -30,7 +31,7 @@ export const HTTPRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
               ...node,
               data: {
                 ...node.data,
-                ...values
+                ...values,
               },
             };
           }
