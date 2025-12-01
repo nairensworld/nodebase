@@ -2,6 +2,7 @@ import type {
   NodeExecuter,
   WorkflowContext,
 } from "@/app/features/executions/types";
+import { httpRequestChannel } from "@/inngest/channels/http-request-channel";
 
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
@@ -29,33 +30,39 @@ export const httpRequestExecuter: NodeExecuter<HttpRequestData> = async ({
   nodeId,
   context,
   step,
+  publish,
 }) => {
-  // TODO: pubish loading state for http request
+  await publish(buildChannelWithStatus(nodeId, "loading"));
 
   if (!data.endpoint) {
-    // TODO: Publish error state for http request
+    await publish(buildChannelWithStatus(nodeId, "error"));
     throw new NonRetriableError("HTTP Request node: No endpoint configured");
   }
 
   if (!data.variableName) {
-    // TODO: Publish error state for http request
+    await publish(buildChannelWithStatus(nodeId, "error"));
     throw new NonRetriableError(
       "HTTP Request node: Variable name not configured"
     );
   }
 
   if (!data.method) {
-    // TODO: Publish error state for http request
+    await publish(buildChannelWithStatus(nodeId, "error"));
     throw new NonRetriableError("HTTP Request node: Method not configured");
   }
 
-  const result = await step.run(
-    "http-request",
-    executeHttpRequest(data, context)
-  );
-  // TODO: pubish success state for http request
+  try {
+    const result = await step.run(
+      "http-request",
+      executeHttpRequest(data, context)
+    );
+    await publish(buildChannelWithStatus(nodeId, "success"));
 
-  return result;
+    return result;
+  } catch (error) {
+    await publish(buildChannelWithStatus(nodeId, "error"));
+    throw error;
+  }
 };
 
 function executeHttpRequest(
@@ -98,4 +105,14 @@ function executeHttpRequest(
       [data.variableName]: responsePayload,
     };
   };
+}
+
+function buildChannelWithStatus(
+  nodeId: string,
+  statusString: "loading" | "success" | "error"
+) {
+  return httpRequestChannel().status({
+    nodeId,
+    status: statusString,
+  });
 }
