@@ -1,8 +1,5 @@
 "use client";
 
-import { NodeType } from "@/generated/prisma";
-import { createId } from "@paralleldrive/cuid2";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -11,10 +8,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+
+import { toast } from "sonner";
+import { useCallback } from "react";
 import { Separator } from "./ui/separator";
 import { useReactFlow } from "@xyflow/react";
-import { useCallback } from "react";
-import { toast } from "sonner";
+import { NodeType } from "@/generated/prisma";
+import { createId } from "@paralleldrive/cuid2";
+import { GlobeIcon, MousePointerIcon } from "lucide-react";
 
 export type NodeTypeOption = {
   type: string;
@@ -30,6 +31,12 @@ const triggerNodes: NodeTypeOption[] = [
     description:
       "Runs the flow on clicking a button. Good for getting started quickly.",
     icon: MousePointerIcon,
+  },
+  {
+    type: NodeType.GOOGLE_FORM_TRIGGER,
+    label: "Google Form",
+    description: "Runs the flow when a Google Form is submmited.",
+    icon: "/logos/googleform.svg",
   },
 ];
 

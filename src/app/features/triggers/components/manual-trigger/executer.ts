@@ -1,4 +1,7 @@
-import type { NodeExecuter } from "@/app/features/executions/types";
+import type {
+  channelStatusOptions,
+  NodeExecuter,
+} from "@/app/features/executions/types";
 import { manualTriggerChannel } from "@/inngest/channels/manual-trigger-channel";
 
 type ManualTriggerData = Record<string, unknown>;
@@ -21,7 +24,7 @@ export const manualTriggerExecuter: NodeExecuter<ManualTriggerData> = async ({
 
 function buildChannelWithStatus(
   nodeId: string,
-  statusString: "loading" | "success" | "error"
+  statusString: channelStatusOptions
 ) {
   return manualTriggerChannel().status({
     nodeId,
