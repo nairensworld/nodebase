@@ -7,7 +7,7 @@ import { fetchHttpRequestRealtimeToken } from "./action";
 import { HttpRequestFormValues, HttpRequestDialog } from "./dialog";
 import { BaseExecutionNode } from "@/components/base-execution-node";
 import { type Node, type NodeProps, useReactFlow } from "@xyflow/react";
-import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channels/http-request-channel";
+import { InngestConsts } from "@/inngest/inngest-function-consts";
 
 type HttpRequestNodeData = {
   endpoint?: string;
@@ -24,7 +24,7 @@ export const HTTPRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: HTTP_REQUEST_CHANNEL_NAME,
+    channel: InngestConsts.HTTP_REQUEST_CHANNEL_NAME,
     topic: "status",
     refreshToken: fetchHttpRequestRealtimeToken,
   });

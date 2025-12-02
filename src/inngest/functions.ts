@@ -3,16 +3,21 @@ import { inngest } from "./client";
 import { topologicalSort } from "./utils";
 import { NonRetriableError } from "inngest";
 import { NodeType } from "@/generated/prisma";
-import { InngestFunctionConsts } from "./inngest-function-consts";
+import { InngestConsts } from "./inngest-function-consts";
 import { httpRequestChannel } from "./channels/http-request-channel";
 import { manualTriggerChannel } from "./channels/manual-trigger-channel";
 import { getExecuter } from "@/app/features/executions/lib/executor-registery";
+import { googleFormTriggerChannel } from "./channels/google-form-trigger-channel";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow", retries: 0 },
   {
-    event: InngestFunctionConsts.EXECUTE_WORKFLOW_NAME,
-    channel: [httpRequestChannel(), manualTriggerChannel()],
+    event: InngestConsts.EXECUTE_WORKFLOW_NAME,
+    channel: [
+      httpRequestChannel(),
+      manualTriggerChannel(),
+      googleFormTriggerChannel(),
+    ],
   },
 
   async ({ event, step, publish }) => {

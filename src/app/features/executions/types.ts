@@ -16,3 +16,5 @@ export interface NodeExecutorParams<TData = Record<string, unknown>> {
 export type NodeExecuter<TData = Record<string, unknown>> = (
   params: NodeExecutorParams<TData>
 ) => Promise<WorkflowContext>;
+
+export type channelStatusOptions = "loading" | "success" | "error";

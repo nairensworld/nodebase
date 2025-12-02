@@ -11,7 +11,8 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import { inngest } from "@/inngest/client";
-import { InngestFunctionConsts } from "@/inngest/inngest-function-consts";
+import { InngestConsts } from "@/inngest/inngest-function-consts";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -20,19 +21,14 @@ export const workflowsRouter = createTRPCRouter({
       const workflow = await prisma.workflow.findUniqueOrThrow({
         where: {
           id: input.id,
-          userId: ctx.auth.user.id
-        }
-      })
+          userId: ctx.auth.user.id,
+        },
+      });
 
-      await inngest.send({
-        name: InngestFunctionConsts.EXECUTE_WORKFLOW_NAME,
-        data: { workflowId: input.id }
-      })
+      await sendWorkflowExecution({ workflowId: input.id });
 
-      return workflow
-
+      return workflow;
     }),
-
 
   create: premiumProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({

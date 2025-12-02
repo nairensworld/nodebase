@@ -1,12 +1,12 @@
 import { channel, topic } from "@inngest/realtime";
-
-export const MANUAL_TRIGGER_CHANNEL_NAME = "manual-trigger-execution-channel";
+import { InngestConsts } from "../inngest-function-consts";
+import { channelStatusOptions } from "@/app/features/executions/types";
 
 export const manualTriggerChannel = channel(
-  MANUAL_TRIGGER_CHANNEL_NAME
+  InngestConsts.MANUAL_TRIGGER_CHANNEL_NAME
 ).addTopic(
   topic("status").type<{
     nodeId: string;
-    status: "loading" | "success" | "error";
+    status: channelStatusOptions;
   }>()
 );
