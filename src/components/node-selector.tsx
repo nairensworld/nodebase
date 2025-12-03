@@ -28,8 +28,7 @@ const triggerNodes: NodeTypeOption[] = [
   {
     type: NodeType.MANUAL_TRIGGER,
     label: "Trigger Manually",
-    description:
-      "Runs the flow on clicking a button. Good for getting started quickly.",
+    description: "Runs the flow on clicking a button. Good for getting started quickly.",
     icon: MousePointerIcon,
   },
   {
@@ -37,6 +36,12 @@ const triggerNodes: NodeTypeOption[] = [
     label: "Google Form",
     description: "Runs the flow when a Google Form is submmited.",
     icon: "/logos/googleform.svg",
+  },
+  {
+    type: NodeType.STRIPE_TRIGGER,
+    label: "Stripe Event",
+    description: "Runs the flow when a Stripe event is captured.",
+    icon: "/logos/stripe.svg",
   },
 ];
 
@@ -55,11 +60,7 @@ interface NodeSelectorProps {
   children: React.ReactNode;
 }
 
-export function NodeSelector({
-  open,
-  onOpenChange,
-  children,
-}: NodeSelectorProps) {
+export function NodeSelector({ open, onOpenChange, children }: NodeSelectorProps) {
   const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
 
   const handleNodeSelect = useCallback(
@@ -77,9 +78,7 @@ export function NodeSelector({
       }
 
       setNodes((nodes) => {
-        const hasInitialTrigger = nodes.some(
-          (node) => node.type === NodeType.INITIAL
-        );
+        const hasInitialTrigger = nodes.some((node) => node.type === NodeType.INITIAL);
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
 
@@ -136,9 +135,7 @@ export function NodeSelector({
                   )}
 
                   <div className="flex flex-col items-start">
-                    <span className="font-medium text-sm">
-                      {nodeType.label}
-                    </span>
+                    <span className="font-medium text-sm">{nodeType.label}</span>
                     <span className="text-xs text-muted-foreground">
                       {nodeType.description}
                     </span>
@@ -171,9 +168,7 @@ export function NodeSelector({
                   )}
 
                   <div className="flex flex-col items-start">
-                    <span className="font-medium text-sm">
-                      {nodeType.label}
-                    </span>
+                    <span className="font-medium text-sm">{nodeType.label}</span>
                     <span className="text-xs text-muted-foreground">
                       {nodeType.description}
                     </span>
