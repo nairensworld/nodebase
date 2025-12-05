@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
-import type { NodeExecuter } from "@/app/features/executions/types";
+import type { channelStatusOptions, NodeExecuter } from "@/app/features/executions/types";
 import { httpRequestChannel } from "@/inngest/channels/http-request-channel";
 
 function createSafeJsonString(): Handlebars.HelperDelegate {
@@ -29,21 +29,21 @@ export const httpRequestExecuter: NodeExecuter<HttpRequestData> = async ({
   publish,
 }) => {
   try {
-    await publish(buildChannelWithStatus(nodeId, "loading"));
+    await publish(message("loading"));
 
     const result = await step.run("http-request", async () => {
       if (!data.endpoint) {
-        await publish(buildChannelWithStatus(nodeId, "error"));
+        await publish(message("error"));
         throw new NonRetriableError("HTTP Request node: Endpoint not configured");
       }
 
       if (!data.variableName) {
-        await publish(buildChannelWithStatus(nodeId, "error"));
+        await publish(message("error"));
         throw new NonRetriableError("HTTP Request node: Variable name not configured");
       }
 
       if (!data.method) {
-        await publish(buildChannelWithStatus(nodeId, "error"));
+        await publish(message("error"));
         throw new NonRetriableError("HTTP Request node: Method not configured");
       }
 
@@ -79,21 +79,15 @@ export const httpRequestExecuter: NodeExecuter<HttpRequestData> = async ({
         [data.variableName]: responsePayload,
       };
     });
-    await publish(buildChannelWithStatus(nodeId, "success"));
+    await publish(message("success"));
 
     return result;
   } catch (error) {
-    await publish(buildChannelWithStatus(nodeId, "error"));
+    await publish(message("error"));
     throw error;
   }
-};
 
-function buildChannelWithStatus(
-  nodeId: string,
-  statusString: "loading" | "success" | "error"
-) {
-  return httpRequestChannel().status({
-    nodeId,
-    status: statusString,
-  });
-}
+  function message(status: channelStatusOptions) {
+    return httpRequestChannel().status({ nodeId, status });
+  }
+};
