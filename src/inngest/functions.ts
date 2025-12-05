@@ -1,14 +1,17 @@
 import prisma from "@/lib/db";
 import { inngest } from "./client";
 import { topologicalSort } from "./utils";
-import { NonRetriableError } from "inngest";
+import { anthropic, NonRetriableError } from "inngest";
 import { NodeType } from "@/generated/prisma";
+import { geminiChannel } from "./channels/gemini";
+import { openaiChannel } from "./channels/openai";
 import { InngestConsts } from "./inngest-function-consts";
 import { httpRequestChannel } from "./channels/http-request-channel";
 import { manualTriggerChannel } from "./channels/manual-trigger-channel";
 import { stripeTriggerChannel } from "./channels/stripe-trigger-channel";
 import { getExecuter } from "@/app/features/executions/lib/executor-registery";
 import { googleFormTriggerChannel } from "./channels/google-form-trigger-channel";
+import { anthropicChannel } from "./channels/anthropic";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow", retries: 0 },
@@ -19,6 +22,9 @@ export const executeWorkflow = inngest.createFunction(
       manualTriggerChannel(),
       googleFormTriggerChannel(),
       stripeTriggerChannel(),
+      geminiChannel(),
+      openaiChannel(),
+      anthropicChannel()
     ],
   },
 
