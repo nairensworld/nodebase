@@ -23,6 +23,7 @@ type AnthropicData = {
 export const anthropicExecuter: NodeExecuter<AnthropicData> = async ({
   data,
   nodeId,
+  userId,
   context,
   step,
   publish,
@@ -49,13 +50,10 @@ export const anthropicExecuter: NodeExecuter<AnthropicData> = async ({
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
   const credential = await step.run("get-credential", () => {
-    return prisma.credential.findUnique({
-      where: {
-        id: data.credentialId,
-      },
-    });
+    return prisma.credential.findUnique({ where: { id: data.credentialId, userId } });
   });
   if (!credential) {
+    await publish(message("error"));
     throw new NonRetriableError("Anthropic node: Credential not found");
   }
 

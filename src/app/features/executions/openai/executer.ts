@@ -23,6 +23,7 @@ type OpenAiData = {
 export const openaiExecuter: NodeExecuter<OpenAiData> = async ({
   data,
   nodeId,
+  userId,
   context,
   step,
   publish,
@@ -35,11 +36,11 @@ export const openaiExecuter: NodeExecuter<OpenAiData> = async ({
   }
   if (!data.userPrompt) {
     await publish(message("error"));
-    throw new NonRetriableError("OpenAi node: User Prompt not configured");
+    throw new NonRetriableError("OpenAI node: User Prompt not configured");
   }
   if (!data.credentialId) {
     await publish(message("error"));
-    throw new NonRetriableError("Gemini node: Credential not configured");
+    throw new NonRetriableError("OpenAI node: Credential not configured");
   }
 
   const systemPrompt = data.systemPrompt
@@ -49,10 +50,11 @@ export const openaiExecuter: NodeExecuter<OpenAiData> = async ({
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
   const credential = await step.run("get-credential", () => {
-    return prisma.credential.findUnique({ where: { id: data.credentialId } });
+    return prisma.credential.findUnique({ where: { id: data.credentialId, userId } });
   });
   if (!credential) {
-    throw new NonRetriableError("Gemini node: Credential not found");
+    await publish(message("error"));
+    throw new NonRetriableError("OpenAI node: Credential not found");
   }
 
   const openai = createOpenAI({ apiKey: credential.value });
