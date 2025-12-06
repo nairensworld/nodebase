@@ -23,6 +23,7 @@ type GeminiData = {
 export const geminiExecuter: NodeExecuter<GeminiData> = async ({
   data,
   nodeId,
+  userId,
   context,
   step,
   publish,
@@ -50,9 +51,10 @@ export const geminiExecuter: NodeExecuter<GeminiData> = async ({
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
   const credential = await step.run("get-credential", () => {
-    return prisma.credential.findUnique({ where: { id: data.credentialId } });
+    return prisma.credential.findUnique({ where: { id: data.credentialId, userId } });
   });
   if (!credential) {
+    await publish(message("error"));
     throw new NonRetriableError("Gemini node: Credential not found");
   }
 

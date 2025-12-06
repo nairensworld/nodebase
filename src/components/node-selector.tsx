@@ -28,19 +28,19 @@ const triggerNodes: NodeTypeOption[] = [
   {
     type: NodeType.MANUAL_TRIGGER,
     label: "Trigger Manually",
-    description: "Runs the flow on clicking a button. Good for getting started quickly.",
+    description: "Runs the flow on clicking a button. Good for getting started quickly",
     icon: MousePointerIcon,
   },
   {
     type: NodeType.GOOGLE_FORM_TRIGGER,
     label: "Google Form",
-    description: "Runs the flow when a Google Form is submmited.",
+    description: "Runs the flow when a Google Form is submmited",
     icon: "/logos/googleform.svg",
   },
   {
     type: NodeType.STRIPE_TRIGGER,
     label: "Stripe Event",
-    description: "Runs the flow when a Stripe event is captured.",
+    description: "Runs the flow when a Stripe event is captured",
     icon: "/logos/stripe.svg",
   },
 ];
@@ -49,26 +49,38 @@ const executionNodes: NodeTypeOption[] = [
   {
     type: NodeType.HTTP_REQUEST,
     label: "HTTP Request",
-    description: "Makes an HTTP request to a specified URL.",
+    description: "Makes an HTTP request to a specified URL",
     icon: GlobeIcon,
   },
   {
     type: NodeType.GEMINI,
     label: "Gemini",
-    description: "Uses Google Gemini to genreate text.",
+    description: "Uses Google Gemini to genreate text",
     icon: "/logos/gemini.svg",
   },
   {
     type: NodeType.OPENAI,
     label: "OpenAI",
-    description: "Uses OpenAI model to genreate text.",
+    description: "Uses OpenAI model to genreate text",
     icon: "/logos/openai.svg",
   },
   {
     type: NodeType.ANTHROPIC,
     label: "Anthropic",
-    description: "Uses Anthropic model to genreate text.",
+    description: "Uses Anthropic model to genreate text",
     icon: "/logos/anthropic.svg",
+  },
+  {
+    type: NodeType.DISCORD,
+    label: "Discord",
+    description: "Send a message to Discord",
+    icon: "/logos/discord.svg",
+  },
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description: "Send a message to Slack",
+    icon: "/logos/slack.svg",
   },
 ];
 

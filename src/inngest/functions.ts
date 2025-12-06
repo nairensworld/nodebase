@@ -1,17 +1,19 @@
 import prisma from "@/lib/db";
 import { inngest } from "./client";
 import { topologicalSort } from "./utils";
-import { anthropic, NonRetriableError } from "inngest";
+import { NonRetriableError } from "inngest";
 import { NodeType } from "@/generated/prisma";
+import { slackChannel } from "./channels/slack";
 import { geminiChannel } from "./channels/gemini";
 import { openaiChannel } from "./channels/openai";
+import { discordChannel } from "./channels/discord";
+import { anthropicChannel } from "./channels/anthropic";
 import { InngestConsts } from "./inngest-function-consts";
 import { httpRequestChannel } from "./channels/http-request-channel";
 import { manualTriggerChannel } from "./channels/manual-trigger-channel";
 import { stripeTriggerChannel } from "./channels/stripe-trigger-channel";
 import { getExecuter } from "@/app/features/executions/lib/executor-registery";
 import { googleFormTriggerChannel } from "./channels/google-form-trigger-channel";
-import { anthropicChannel } from "./channels/anthropic";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow", retries: 0 },
@@ -24,7 +26,9 @@ export const executeWorkflow = inngest.createFunction(
       stripeTriggerChannel(),
       geminiChannel(),
       openaiChannel(),
-      anthropicChannel()
+      anthropicChannel(),
+      discordChannel(),
+      slackChannel(),
     ],
   },
 
@@ -46,6 +50,16 @@ export const executeWorkflow = inngest.createFunction(
       return topologicalSort(workflow.nodes, workflow.connections);
     });
 
+    const userId = await step.run("find-workflow-user-id", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id: workflowId },
+        select: {
+          userId: true,
+        },
+      });
+      return workflow.userId;
+    });
+
     // Initialize the context with any initial data from the trigger
     let context = event.data.initialData || {};
 
@@ -55,6 +69,7 @@ export const executeWorkflow = inngest.createFunction(
       context = await executer({
         data: node.data as Record<string, unknown>,
         nodeId: node.id,
+        userId,
         context,
         step,
         publish,
