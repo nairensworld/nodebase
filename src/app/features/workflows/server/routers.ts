@@ -1,18 +1,12 @@
-import { type Node, type Edge, Position } from "@xyflow/react";
+import z from "zod";
+import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma";
 import { generateSlug } from "random-word-slugs";
 import { PAGINATION } from "@/config/constants";
-import { NodeType } from "@/generated/prisma";
-import prisma from "@/lib/db";
-import z from "zod";
-
-import {
-  createTRPCRouter,
-  premiumProcedure,
-  protectedProcedure,
-} from "@/trpc/init";
-import { inngest } from "@/inngest/client";
-import { InngestConsts } from "@/inngest/inngest-function-consts";
+import { type Node, type Edge } from "@xyflow/react";
 import { sendWorkflowExecution } from "@/inngest/utils";
+import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
+
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure

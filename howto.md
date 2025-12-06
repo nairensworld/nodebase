@@ -2,6 +2,14 @@
 
 Step by step guide for development activities in this project
 
+
+## [ Prisma ] 
+Prisma is the ORM tool we used in this project to manage the connection with the DB.
+It allows to manage the database changes using a code (prisma.schema)
+
+- To apply the changes execute:
+  ```bash 
+  $ npx prisma migrate dev  
 ## [ Add New Node ] 🚀
 
 1.  **Prisma Node Type:**  
@@ -59,3 +67,5 @@ Stripe is a widely used billing platform. events like payments or checkouts can 
         ```bash
         $  stripe trigger payment_intent.succeeded
         ```
+
+

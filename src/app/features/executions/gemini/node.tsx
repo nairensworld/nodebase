@@ -10,6 +10,7 @@ import { type Node, type NodeProps, useReactFlow } from "@xyflow/react";
 
 type GeminiNodeData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -31,21 +32,18 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
 
   const handleSubmit = (values: GeminiFormValues) => {
     setNodes((nodes) =>
-      nodes.map(
-        (node) => {
-          if (node.id === props.id) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                ...values,
-              },
-            };
-          }
-          return node;
+      nodes.map((node) => {
+        if (node.id === props.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...values,
+            },
+          };
         }
-        // end of map/return new object
-      )
+        return node;
+      })
     );
   };
 
