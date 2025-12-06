@@ -1,3 +1,4 @@
+import prisma from "@/lib/db";
 import { generateText } from "ai";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
@@ -14,6 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -29,11 +31,15 @@ export const anthropicExecuter: NodeExecuter<AnthropicData> = async ({
 
   if (!data.variableName) {
     await publish(message("error"));
-    throw new NonRetriableError("OpenAi node: Variable name not configured");
+    throw new NonRetriableError("Anthropic node: Variable name not configured");
   }
   if (!data.userPrompt) {
     await publish(message("error"));
-    throw new NonRetriableError("OpenAi node: User Prompt not configured");
+    throw new NonRetriableError("Anthropic node: User Prompt not configured");
+  }
+  if (!data.credentialId) {
+    await publish(message("error"));
+    throw new NonRetriableError("Anthropic node: Credential not configured");
   }
 
   const systemPrompt = data.systemPrompt
@@ -42,12 +48,23 @@ export const anthropicExecuter: NodeExecuter<AnthropicData> = async ({
 
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
+  });
+  if (!credential) {
+    throw new NonRetriableError("Anthropic node: Credential not found");
+  }
+
   const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey: credential.value,
   });
 
   try {
-    const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
+    const { steps } = await step.ai.wrap("anthropic-generate-text", generateText, {
       model: anthropic("claude-3-5-haiku-latest"),
       system: systemPrompt,
       prompt: userPrompt,

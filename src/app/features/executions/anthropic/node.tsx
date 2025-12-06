@@ -10,6 +10,7 @@ import { type Node, type NodeProps, useReactFlow } from "@xyflow/react";
 
 type AnthropicNodeData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
